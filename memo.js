@@ -1,5 +1,6 @@
 /**
  * @description 度数からラジアンに変換
+ * @param {number} d
  * @returns {number}
  */
 export function deg2Rad(d) {
@@ -7,7 +8,7 @@ export function deg2Rad(d) {
 }
 
 /**
- * @description 3次元ベクトルをx軸, y軸, z軸の順に回転
+ * @description 3次元ベクトルをx軸, y軸, z軸の順に反時計回りに回転
  * @param {Object} vector
  * @param {number} vector.x
  * @param {number} vector.y
@@ -50,7 +51,7 @@ export function rotateVectorXYZ(vector, rotation) {
 }
 
 /**
- * @description 3次元ベクトルをz軸, y軸, x軸の順に回転
+ * @description 3次元ベクトルをz軸, y軸, x軸の順に反時計回りに回転
  * @param {Object} vector
  * @param {number} vector.x
  * @param {number} vector.y
@@ -64,7 +65,7 @@ export function rotateVectorXYZ(vector, rotation) {
  * @returns {number} returns.y
  * @returns {number} returns.z
  */
-export function rotateVectorZXY(vector, rotation) {
+export function rotateVectorZYX(vector, rotation) {
     const { x: rx, y: ry, z: rz } = rotation;
 
     const cosx = Math.cos(rx);
@@ -84,10 +85,10 @@ export function rotateVectorZXY(vector, rotation) {
     const y2 = y1;
     const z2 = z1 * siny + x1 * cosy;
 
-    //z
+    //x
     return {
-        x: x2 * cosz - y2 * sinz,
-        y: x2 * sinz + y2 * cosz,
-        z: z2,
+        x: x2,
+        y: y2 * cosx - z2 * sinz,
+        z: y2 * sinx + z2 * cosz,
     };
 }
