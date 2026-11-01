@@ -81,14 +81,14 @@ export function rotateVectorZYX(vector, rotation) {
     const z1 = vector.z;
 
     //y
-    const x2 = z1 * cosy - x1 * siny;
+    const x2 = z1 * siny + x1 * cosy;
     const y2 = y1;
-    const z2 = z1 * siny + x1 * cosy;
+    const z2 = z1 * cosy - x1 * siny;
 
     //x
     return {
         x: x2,
-        y: y2 * cosx - z2 * sinz,
-        z: y2 * sinx + z2 * cosz,
+        y: y2 * cosx - z2 * sinx,
+        z: y2 * sinx + z2 * cosx,
     };
 }
