@@ -1,4 +1,13 @@
 /**
+ * @description 度数からラジアンに変換
+ * @param {number} d
+ * @returns {number}
+ */
+export function deg2Rad(d) {
+    return d * (Math.PI / 180);
+}
+
+/**
  * @description 3次元ベクトルをx軸, y軸, z軸の順に反時計回りに回転
  * @param {Object} vector
  * @param {number} vector.x
