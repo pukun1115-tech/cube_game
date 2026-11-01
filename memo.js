@@ -7,7 +7,7 @@ export function deg2Rad(d) {
 }
 
 /**
- * @description 3次元ベクトルをx軸, y軸, z軸の順に回転します。
+ * @description 3次元ベクトルをx軸, y軸, z軸の順に回転
  * @param {Object} vector
  * @param {number} vector.x
  * @param {number} vector.y
@@ -24,33 +24,33 @@ export function deg2Rad(d) {
 export function rotateVectorXYZ(vector, rotation) {
     const { x: rx, y: ry, z: rz } = rotation;
 
-    const cx = Math.cos(rx);
-    const sx = Math.sin(rx);
-    const cy = Math.cos(ry);
-    const sy = Math.sin(ry);
-    const cz = Math.cos(rz);
-    const sz = Math.sin(rz);
+    const cosx = Math.cos(rx);
+    const sinx = Math.sin(rx);
+    const cosy = Math.cos(ry);
+    const siny = Math.sin(ry);
+    const cosz = Math.cos(rz);
+    const sinz = Math.sin(rz);
 
-    //x軸回転
+    //x
     const x1 = vector.x;
-    const y1 = vector.y * cx - vector.z * sx;
-    const z1 = vector.y * sx + vector.z * cx;
+    const y1 = vector.y * cosx - vector.z * sinx;
+    const z1 = vector.y * sinx + vector.z * cosx;
 
-    //y軸回転
-    const x2 = x1 * cy + z1 * sy;
+    //y
+    const x2 = z1 * siny + x1 * cosy;
     const y2 = y1;
-    const z2 = -x1 * sy + z1 * cy;
+    const z2 = z1 * cosy - x1 * siny;
 
-    //z軸回転
+    //z
     return {
-        x: x2 * cz - y2 * sz,
-        y: x2 * sz + y2 * cz,
+        x: x2 * cosz - y2 * sinz,
+        y: x2 * sinz + y2 * cosz,
         z: z2,
     };
 }
 
 /**
- * @description 3次元ベクトルをz軸, y軸, x軸の順に回転します。
+ * @description 3次元ベクトルをz軸, y軸, x軸の順に回転
  * @param {Object} vector
  * @param {number} vector.x
  * @param {number} vector.y
@@ -64,30 +64,30 @@ export function rotateVectorXYZ(vector, rotation) {
  * @returns {number} returns.y
  * @returns {number} returns.z
  */
-export function rotateVectorXYZ(vector, rotation) {
+export function rotateVectorZXY(vector, rotation) {
     const { x: rx, y: ry, z: rz } = rotation;
 
-    const cx = Math.cos(rx);
-    const sx = Math.sin(rx);
-    const cy = Math.cos(ry);
-    const sy = Math.sin(ry);
-    const cz = Math.cos(rz);
-    const sz = Math.sin(rz);
+    const cosx = Math.cos(rx);
+    const sinx = Math.sin(rx);
+    const cosy = Math.cos(ry);
+    const siny = Math.sin(ry);
+    const cosz = Math.cos(rz);
+    const sinz = Math.sin(rz);
 
-    //x軸回転
-    const x1 = vector.x;
-    const y1 = vector.y * cx - vector.z * sx;
-    const z1 = vector.y * sx + vector.z * cx;
+    //z
+    const x1 = vector.x * cosz - vector.y * sinz;
+    const y1 = vector.x * sinz + vector.y * cosz;
+    const z1 = vector.z;
 
-    // Y軸回転
-    const x2 = x1 * cy + z1 * sy;
+    //y
+    const x2 = z1 * cosy - x1 * siny;
     const y2 = y1;
-    const z2 = -x1 * sy + z1 * cy;
+    const z2 = z1 * siny + x1 * cosy;
 
-    // Z軸回転
+    //z
     return {
-        x: x2 * cz - y2 * sz,
-        y: x2 * sz + y2 * cz,
+        x: x2 * cosz - y2 * sinz,
+        y: x2 * sinz + y2 * cosz,
         z: z2,
     };
 }
