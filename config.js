@@ -9,7 +9,7 @@ export const BLOCK_TYPES = {
     3: "stone",
 };
 export const BLOCK_TEXTURECOORD = {
-    0: {
+    1: {
         "top": [],
         "bottom": [],
         "right": [],
