@@ -54,6 +54,11 @@ const vMatrix = Mat4.identity(Mat4.create());
 const pMatrix = Mat4.identity(Mat4.create());
 const mvpMatrix = Mat4.identity(Mat4.create());
 
+const player = {
+    pos: { x: 0, y: 0, z: 0 },
+    rot: { x: 0, y: 0, z: 0 },
+};
+
 /**
  * @param {WebGLRenderingContext} gl
  * @returns {void}
