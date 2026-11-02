@@ -52,7 +52,7 @@ const pMatrix = Mat4.identity(Mat4.create());
 const mvpMatrix = Mat4.identity(Mat4.create());
 
 const player = {
-    pos: { x: 0, y: 0, z: 4 },
+    pos: { x: 0, y: 0, z: 2 },
     rot: { x: 0, y: 0, z: 0 },
 };
 
@@ -80,13 +80,13 @@ function mainLoop(gl, indexCount, t) {
     Mat4.identity(pMatrix);
     Mat4.identity(mvpMatrix);
 
-    player.rot.y += 0.5;
+    player.rot.y += 1;
     const center = rotateVectorZYX({ x: 0, y: 0, z: -1 }, { x: -deg2rad(player.rot.x), y: -deg2rad(player.rot.y), z: -deg2rad(player.rot.z) });
     const up = rotateVectorZYX({ x: 0, y: 1, z: 0 }, { x: -deg2rad(player.rot.x), y: -deg2rad(player.rot.y), z: -deg2rad(player.rot.z) });
 
     Mat4.lookAt(vMatrix, [player.pos.x, player.pos.y, player.pos.z], [center.x, center.y, center.z], [up.x, up.y, up.z]);
     Mat4.perspective(pMatrix, deg2rad(120), gl.canvas.width / gl.canvas.height, 0.01, 1000);
-    Mat4.rotateY(mMatrix, mMatrix, deg2rad(t % 360));
+    //Mat4.rotateY(mMatrix, mMatrix, deg2rad(t % 360));
 
     Mat4.multiply(mvpMatrix, pMatrix, vMatrix);
     Mat4.multiply(mvpMatrix, mvpMatrix, mMatrix);
