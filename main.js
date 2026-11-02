@@ -52,7 +52,7 @@ const pMatrix = Mat4.identity(Mat4.create());
 const mvpMatrix = Mat4.identity(Mat4.create());
 
 const player = {
-    pos: { x: 0, y: 0, z: 0 },
+    pos: { x: 0, y: 0, z: 4 },
     rot: { x: 0, y: 0, z: 0 },
 };
 
@@ -72,7 +72,7 @@ function mainLoop(gl, indexCount, t) {
     gl.clearDepth(1.0);
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    
+
     gl.uniform1i(uniformLocations["texture"], 0);
 
     Mat4.identity(mMatrix);
@@ -80,9 +80,12 @@ function mainLoop(gl, indexCount, t) {
     Mat4.identity(pMatrix);
     Mat4.identity(mvpMatrix);
 
-    Mat4.lookAt(vMatrix, [1.0, -1.0, 2.0], [0, 0, 0], [0, 1, 0]);
-    Mat4.perspective(pMatrix, 90 * Math.PI / 180, gl.canvas.width / gl.canvas.height, 0.01, 100);
-    Mat4.rotateY(mMatrix, mMatrix, (Math.PI / 180) * (t % 360));
+    const center = rotateVectorZYX({ x: 0, y: 0, z: -1 }, { x: -deg2rad(player.rot.x), y: -deg2rad(player.rot.y), z: -deg2rad(player.rot.z) });
+    const up = rotateVectorZYX({ x: 0, y: 1, z: 0 }, { x: -deg2rad(player.rot.x), y: -deg2rad(player.rot.y), z: -deg2rad(player.rot.z) });
+
+    Mat4.lookAt(vMatrix, [player.pos.x, player.pos.y, player.pos.z], [center.x, center.y, center.z], [up.x, up.y, up.z]);
+    Mat4.perspective(pMatrix, deg2rad(120), gl.canvas.width / gl.canvas.height, 0.01, 1000);
+    Mat4.rotateY(mMatrix, mMatrix, deg2rad(t % 360));
 
     Mat4.multiply(mvpMatrix, pMatrix, vMatrix);
     Mat4.multiply(mvpMatrix, mvpMatrix, mMatrix);
@@ -90,7 +93,7 @@ function mainLoop(gl, indexCount, t) {
     gl.uniformMatrix4fv(uniformLocations["mvpMatrix"], false, mvpMatrix);
 
     gl.drawElements(gl.TRIANGLES, indexCount, gl.UNSIGNED_SHORT, 0);
-    
+
     requestAnimationFrame(() => mainLoop(gl, indexCount, t + 1));
 }
 
