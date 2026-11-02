@@ -9,18 +9,21 @@ export function deg2rad(d) {
 
 /**
  * @description 3次元ベクトルをx軸, y軸, z軸の順に反時計回りに回転
- * @param {Object} vector
- * @param {number} vector.x
- * @param {number} vector.y
- * @param {number} vector.z
- * @param {Object} rotation
- * @param {number} rotation.x
- * @param {number} rotation.y
- * @param {number} rotation.z
- * @returns {Object}
- * @returns {number} returns.x
- * @returns {number} returns.y
- * @returns {number} returns.z
+ * @param {{
+ *     x: number,
+ *     y:number,
+ *     z:number
+ * }} vector
+ * @param {{
+ *     x:number,
+ *     y:number,
+ *     z:number
+ * }} rotation
+ * @returns {{
+ *     x:number,
+ *     y:number,
+ *     z:number
+ * }}
  */
 export function rotateVectorXYZ(vector, rotation) {
     const { x: rx, y: ry, z: rz } = rotation;
@@ -52,18 +55,21 @@ export function rotateVectorXYZ(vector, rotation) {
 
 /**
  * @description 3次元ベクトルをz軸, y軸, x軸の順に反時計回りに回転
- * @param {Object} vector
- * @param {number} vector.x
- * @param {number} vector.y
- * @param {number} vector.z
- * @param {Object} rotation
- * @param {number} rotation.x
- * @param {number} rotation.y
- * @param {number} rotation.z
- * @returns {Object}
- * @returns {number} returns.x
- * @returns {number} returns.y
- * @returns {number} returns.z
+ * @param {{
+ *     x: number,
+ *     y:number,
+ *     z:number
+ * }} vector
+ * @param {{
+ *     x:number,
+ *     y:number,
+ *     z:number
+ * }} rotation
+ * @returns {{
+ *     x:number,
+ *     y:number,
+ *     z:number
+ * }}
  */
 export function rotateVectorZYX(vector, rotation) {
     const { x: rx, y: ry, z: rz } = rotation;

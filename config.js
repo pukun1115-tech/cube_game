@@ -3,8 +3,15 @@ export const CHUNK_SIZE_Y = 32;
 export const CHUNK_SIZE_Z = 16;
 
 const TS = 1 / 16;
+/**
+ * @param {Array<number>} coords
+ * @returns {Array<number>}
+ */
 function scaleUV(coords) {
-    return coords.map(x => x * TS);
+    for (let i = 0; i < coords.length / 2; i++) {
+        //if//
+    }
+    return coords;
 }
 function createBlockUV({ top, bottom = top, front = top, back = front, right = back, left = right }) {
     return {

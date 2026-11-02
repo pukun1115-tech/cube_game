@@ -2,6 +2,8 @@ import { vertex_shader_source, fragment_shader_source, getAttributeLocations, ge
 import { create_shader, create_program, create_vbo, create_ibo, create_texture, set_attribute } from "./gl_functions.js";
 import { Mat4 } from "./matrix.js";
 import { deg2rad, rotateVectorXYZ, rotateVectorZYX } from "./rotation.js";
+import { BLOCK_TEXTURECOORD } from "./config.js";
+import { Chunk } from "./chunk.js";
 
 /** @type {HTMLCanvasElement | null} */
 const canvas = document.getElementById("canvas");
@@ -52,8 +54,8 @@ const pMatrix = Mat4.identity(Mat4.create());
 const mvpMatrix = Mat4.identity(Mat4.create());
 
 const player = {
-    pos: { x: 0, y: 0, z: 2 },
-    rot: { x: 0, y: 0, z: 0 },
+    pos: { x: 0, y: 10, z: 0 },
+    rot: { x: -90, y: 0, z: 0 },
 };
 
 const keyInputs = {};
@@ -64,11 +66,28 @@ window.addEventListener("keyup", (event) => {
     keyInputs[event.code] = false;
 });
 
+/** @type {Array<Chunk>} */
+let chunks = [];
+
 /**
  * @param {WebGLRenderingContext} gl
  * @returns {void}
  */
 function mainLoop(gl, indexCount, t) {
+    //キー操作
+    if (keyInputs["KeyW"] === true) {
+        player.pos.z--;
+    }
+    if (keyInputs["KeyS"] === true) {
+        player.pos.z++;
+    }
+    if (keyInputs["KeyA"] === true) {
+        player.pos.x--;
+    }
+    if (keyInputs["KeyD"] === true) {
+        player.pos.x++;
+    }
+    //gldraw
     gl.clearDepth(1.0);
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -80,12 +99,12 @@ function mainLoop(gl, indexCount, t) {
     Mat4.identity(pMatrix);
     Mat4.identity(mvpMatrix);
 
-    player.rot.y += 1;
-    const center = rotateVectorZYX({ x: 0, y: 0, z: -1 }, { x: -deg2rad(player.rot.x), y: -deg2rad(player.rot.y), z: -deg2rad(player.rot.z) });
-    const up = rotateVectorZYX({ x: 0, y: 1, z: 0 }, { x: -deg2rad(player.rot.x), y: -deg2rad(player.rot.y), z: -deg2rad(player.rot.z) });
+    //player.rot.y += 0.5;
+    const center = rotateVectorZYX({ x: 0, y: 0, z: -1 }, { x: deg2rad(player.rot.x), y: deg2rad(player.rot.y), z: deg2rad(player.rot.z) });
+    const up = rotateVectorZYX({ x: 0, y: 1, z: 0 }, { x: deg2rad(player.rot.x), y: deg2rad(player.rot.y), z: deg2rad(player.rot.z) });
 
     Mat4.lookAt(vMatrix, [player.pos.x, player.pos.y, player.pos.z], [player.pos.x + center.x, player.pos.y + center.y, player.pos.z + center.z], [up.x, up.y, up.z]);
-    Mat4.perspective(pMatrix, deg2rad(120), gl.canvas.width / gl.canvas.height, 0.01, 1000);
+    Mat4.perspective(pMatrix, deg2rad(80), gl.canvas.width / gl.canvas.height, 0.01, 1000);
     //Mat4.rotateY(mMatrix, mMatrix, deg2rad(t % 360));
 
     Mat4.multiply(mvpMatrix, pMatrix, vMatrix);
@@ -122,123 +141,37 @@ function init(gl) {
     gl.enable(gl.DEPTH_TEST);
     //gl.enable(gl.CULL_FACE);
     gl.frontFace(gl.CCW);
-    const position = [
-        -0.5, -0.5, 0.5,
-        0.5, -0.5, 0.5,
-        0.5, 0.5, 0.5,
-        -0.5, 0.5, 0.5,
 
-        0.5, -0.5, 0.5,
-        0.5, -0.5, -0.5,
-        0.5, 0.5, -0.5,
-        0.5, 0.5, 0.5,
+    for (let i = 0; i < 2; i++) {
+        for (let j = 0; j < 2; j++) {
+            chunks.push(new Chunk(i, j))
+        }
+    }
 
-        0.5, -0.5, -0.5,
-        -0.5, -0.5, -0.5,
-        -0.5, 0.5, -0.5,
-        0.5, 0.5, -0.5,
+    /** @type {Array<number>} */
+    let index = [];
+    /** @type {Array<number>} */
+    let position = [];
+    /** @type {Array<number>} */
+    let color = [];
+    /** @type {Array<number>} */
+    let textureCoord = [];
+    /** @type {number} */
+    let indexOffset = 0;
 
-        -0.5, -0.5, -0.5,
-        -0.5, -0.5, 0.5,
-        -0.5, 0.5, 0.5,
-        -0.5, 0.5, -0.5,
+    for (const c of chunks) {
+        const { pos, idx, texCoord, col, idxOffset } = c.generateMesh(indexOffset);
+        indexOffset = idxOffset;
+        index.push(...idx);
+        position.push(...pos);
+        color.push(...col);
+        textureCoord.push(...texCoord);
+    }
 
-        -0.5, 0.5, 0.5,
-        0.5, 0.5, 0.5,
-        0.5, 0.5, -0.5,
-        -0.5, 0.5, -0.5,
-
-        -0.5, -0.5, -0.5,
-        0.5, -0.5, -0.5,
-        0.5, -0.5, 0.5,
-        -0.5, -0.5, 0.5,
-    ];
-    const color = [
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 1.0, 1.0, 1.0,
-    ];
-    const textureCoord = [
-        0.5, 0.25,
-        0.75, 0.25,
-        0.75, 0.0,
-        0.5, 0.0,
-
-        0.25, 0.25,
-        0.5, 0.25,
-        0.5, 0.0,
-        0.25, 0.0,
-
-        0.25, 0.25,
-        0.5, 0.25,
-        0.5, 0.0,
-        0.25, 0.0,
-
-        0.25, 0.25,
-        0.5, 0.25,
-        0.5, 0.0,
-        0.25, 0.0,
-
-        0.0, 0.25,
-        0.25, 0.25,
-        0.25, 0.0,
-        0.0, 0.0,
-
-        0.0, 0.25,
-        0.25, 0.25,
-        0.25, 0.0,
-        0.0, 0.0,
-    ];
-    const index = [
-        0, 1, 2,
-        0, 2, 3,
-
-        4, 5, 6,
-        4, 6, 7,
-
-        8, 9, 10,
-        8, 10, 11,
-
-        12, 13, 14,
-        12, 14, 15,
-
-        16, 17, 18,
-        16, 18, 19,
-
-        20, 21, 22,
-        20, 22, 23,
-    ];
     const ibo = create_ibo(gl, index);
     const position_vbo = create_vbo(gl, position);
     const color_vbo = create_vbo(gl, color);
     const textureCoord_vbo = create_vbo(gl, textureCoord);
-
     if (ibo === null) {
         throw new Error("create_ibo");
     }
