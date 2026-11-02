@@ -2,50 +2,82 @@ export const CHUNK_SIZE_X = 16;
 export const CHUNK_SIZE_Y = 32;
 export const CHUNK_SIZE_Z = 16;
 
+const TS = 1 / 16;
+function scaleUV(coords) {
+    return coords.map(x => x * TS);
+}
+function createBlockUV({ top, bottom = top, front = top, back = front, right = back, left = right }) {
+    return {
+        "top": scaleUV(top),
+        "bottom": scaleUV(bottom),
+        "front": scaleUV(front),
+        "back": scaleUV(back),
+        "right": scaleUV(right),
+        "left": scaleUV(left)
+    };
+}
+
 export const BLOCK_TYPES = {
     0: "air",
     1: "james_head",
     2: "dirt",
-    3: "stone",
+    3: "grass_block",
+    4: "stone",
 };
-const TS = 1 / 16;
 export const BLOCK_TEXTURECOORD = {
-    1: {
+    1: createBlockUV({
         "top": [
-            TS * 0, TS * 1,
-            TS * 1, TS * 1,
-            TS * 1, TS * 0,
-            TS * 0, TS * 0,
-        ],
-        "bottom": [
-            TS * 0, TS * 1,
-            TS * 1, TS * 1,
-            TS * 1, TS * 0,
-            TS * 0, TS * 0,
-        ],
-        "right": [
-            TS * 1, TS * 1,
-            TS * 2, TS * 1,
-            TS * 2, TS * 0,
-            TS * 1, TS * 0,
-        ],
-        "left": [
-            TS * 1, TS * 1,
-            TS * 2, TS * 1,
-            TS * 2, TS * 0,
-            TS * 1, TS * 0,
+            0, 1,
+            1, 1,
+            1, 0,
+            0, 0
         ],
         "front": [
-            TS * 2, TS * 1,
-            TS * 3, TS * 1,
-            TS * 3, TS * 0,
-            TS * 2, TS * 0,
+            2, 1,
+            3, 1,
+            3, 0,
+            2, 0
         ],
         "back": [
-            TS * 1, TS * 1,
-            TS * 2, TS * 1,
-            TS * 2, TS * 0,
-            TS * 1, TS * 0,
+            1, 1,
+            2, 1,
+            2, 0,
+            1, 0
+        ]
+    }),
+    2: createBlockUV({
+        "top": [
+            5, 1,
+            6, 1,
+            6, 0,
+            5, 0
+        ]
+    }),
+    3: createBlockUV({
+        "top": [
+            3, 1,
+            4, 1,
+            4, 0,
+            3, 0
         ],
-    },
+        "bottom": [
+            5, 1,
+            6, 1,
+            6, 0,
+            5, 0
+        ],
+        "front": [
+            4, 1,
+            5, 1,
+            5, 0,
+            4, 0
+        ]
+    }),
+    4: createBlockUV({
+        "top": [
+            6, 1,
+            7, 1,
+            7, 0,
+            6, 0
+    })
 };
