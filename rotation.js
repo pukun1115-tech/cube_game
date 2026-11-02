@@ -3,7 +3,7 @@
  * @param {number} d
  * @returns {number}
  */
-export function deg2Rad(d) {
+export function deg2rad(d) {
     return d * (Math.PI / 180);
 }
 
