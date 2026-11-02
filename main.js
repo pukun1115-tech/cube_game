@@ -84,7 +84,7 @@ function mainLoop(gl, indexCount, t) {
     const center = rotateVectorZYX({ x: 0, y: 0, z: -1 }, { x: -deg2rad(player.rot.x), y: -deg2rad(player.rot.y), z: -deg2rad(player.rot.z) });
     const up = rotateVectorZYX({ x: 0, y: 1, z: 0 }, { x: -deg2rad(player.rot.x), y: -deg2rad(player.rot.y), z: -deg2rad(player.rot.z) });
 
-    Mat4.lookAt(vMatrix, [player.pos.x, player.pos.y, player.pos.z], [center.x, center.y, center.z], [up.x, up.y, up.z]);
+    Mat4.lookAt(vMatrix, [player.pos.x, player.pos.y, player.pos.z], [player.pos.x + center.x, player.pos.y + center.y, player.pos.z + center.z], [up.x, up.y, up.z]);
     Mat4.perspective(pMatrix, deg2rad(120), gl.canvas.width / gl.canvas.height, 0.01, 1000);
     //Mat4.rotateY(mMatrix, mMatrix, deg2rad(t % 360));
 
