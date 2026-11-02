@@ -5,14 +5,12 @@ import { deg2rad, rotateVectorXYZ, rotateVectorZYX } from "./rotation.js";
 
 /** @type {HTMLCanvasElement | null} */
 const canvas = document.getElementById("canvas");
-
 if (canvas === null) {
     throw new Error("canvas");
 }
 
 /** @type {WebGLRenderingContext | null} */
 const gl = canvas.getContext("webgl");
-
 if (gl === null) {
     throw new Error("gl");
 }
@@ -21,14 +19,12 @@ if (gl === null) {
 const vertex_shader = create_shader(gl, vertex_shader_source, "vertex");
 /** @type {WebGLShader | null} */
 const fragment_shader = create_shader(gl, fragment_shader_source, "fragment");
-
 if (vertex_shader === null || fragment_shader === null) {
     throw new Error("create_shader");
 }
 
 /** @type {WebGLProgram | null} */
 const program = create_program(gl, vertex_shader, fragment_shader);
-
 if (program === null) {
     throw new Error("create_program");
 }
@@ -59,6 +55,14 @@ const player = {
     pos: { x: 0, y: 0, z: 0 },
     rot: { x: 0, y: 0, z: 0 },
 };
+
+const keyInputs = {};
+window.addEventListener("keydown", (event) => {
+    keyInputs[event.code] = true;
+});
+window.addEventListener("keyup", (event) => {
+    keyInputs[event.code] = false;
+});
 
 /**
  * @param {WebGLRenderingContext} gl
