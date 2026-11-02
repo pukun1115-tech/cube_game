@@ -80,7 +80,7 @@ function mainLoop(gl, indexCount, t) {
     Mat4.identity(pMatrix);
     Mat4.identity(mvpMatrix);
 
-    player.rot.y += deg2rad(0.5);
+    player.rot.y += 0.5;
     const center = rotateVectorZYX({ x: 0, y: 0, z: -1 }, { x: -deg2rad(player.rot.x), y: -deg2rad(player.rot.y), z: -deg2rad(player.rot.z) });
     const up = rotateVectorZYX({ x: 0, y: 1, z: 0 }, { x: -deg2rad(player.rot.x), y: -deg2rad(player.rot.y), z: -deg2rad(player.rot.z) });
 
