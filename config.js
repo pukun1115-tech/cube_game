@@ -79,5 +79,6 @@ export const BLOCK_TEXTURECOORD = {
             7, 1,
             7, 0,
             6, 0
+        ]
     })
 };
