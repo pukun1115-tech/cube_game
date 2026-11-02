@@ -1,6 +1,7 @@
 import { vertex_shader_source, fragment_shader_source, getAttributeLocations, getAttributeStrides, getUniformLocations } from "./shader.js";
-import { Mat4 } from "./matrix.js";
 import { create_shader, create_program, create_vbo, create_ibo, create_texture, set_attribute } from "./gl_functions.js";
+import { Mat4 } from "./matrix.js";
+import { deg2rad, rotateVectorXYZ, rotateVectorZYX } from "./rotation.js";
 
 /** @type {HTMLCanvasElement | null} */
 const canvas = document.getElementById("canvas");
