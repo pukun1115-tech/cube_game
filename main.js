@@ -54,8 +54,8 @@ const pMatrix = Mat4.identity(Mat4.create());
 const mvpMatrix = Mat4.identity(Mat4.create());
 
 const player = {
-    pos: { x: 0, y: 10, z: 0 },
-    rot: { x: -90, y: 0, z: 0 },
+    pos: { x: 0, y: 4, z: 0 },
+    rot: { x: 0, y: 0, z: 0 },
 };
 
 const keyInputs = {};
@@ -99,13 +99,12 @@ function mainLoop(gl, indexCount, t) {
     Mat4.identity(pMatrix);
     Mat4.identity(mvpMatrix);
 
-    //player.rot.y += 0.5;
+    player.rot.y -= 0.5;
     const center = rotateVectorZYX({ x: 0, y: 0, z: -1 }, { x: deg2rad(player.rot.x), y: deg2rad(player.rot.y), z: deg2rad(player.rot.z) });
     const up = rotateVectorZYX({ x: 0, y: 1, z: 0 }, { x: deg2rad(player.rot.x), y: deg2rad(player.rot.y), z: deg2rad(player.rot.z) });
 
-    Mat4.lookAt(vMatrix, [player.pos.x, player.pos.y, player.pos.z], [player.pos.x + center.x, player.pos.y + center.y, player.pos.z + center.z], [up.x, up.y, up.z]);
+    Mat4.lookAt(vMatrix, [player.pos.x, player.pos.y + 1.6, player.pos.z], [player.pos.x + center.x, player.pos.y + 1.6 + center.y, player.pos.z + center.z], [up.x, up.y, up.z]);
     Mat4.perspective(pMatrix, deg2rad(80), gl.canvas.width / gl.canvas.height, 0.01, 1000);
-    //Mat4.rotateY(mMatrix, mMatrix, deg2rad(t % 360));
 
     Mat4.multiply(mvpMatrix, pMatrix, vMatrix);
     Mat4.multiply(mvpMatrix, mvpMatrix, mMatrix);
@@ -139,7 +138,7 @@ function init(gl) {
     resizeCanvas(gl);
 
     gl.enable(gl.DEPTH_TEST);
-    //gl.enable(gl.CULL_FACE);
+    gl.enable(gl.CULL_FACE);
     gl.frontFace(gl.CCW);
 
     for (let i = 0; i < 2; i++) {

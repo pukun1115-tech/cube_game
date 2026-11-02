@@ -2,16 +2,18 @@ export const CHUNK_SIZE_X = 16;
 export const CHUNK_SIZE_Y = 32;
 export const CHUNK_SIZE_Z = 16;
 
-const TS = 1 / 16;
+export const GRAVITY = 0.1;
+
+const TEXTURE_SIZE = 128;
+
 /**
  * @param {Array<number>} coords
  * @returns {Array<number>}
  */
 function scaleUV(coords) {
-    for (let i = 0; i < coords.length / 2; i++) {
-        //if//
-    }
-    return coords;
+    return coords.map((x) => {
+        return x / TEXTURE_SIZE;
+    });
 }
 function createBlockUV({ top, bottom = top, front = top, back = front, right = back, left = right }) {
     return {
@@ -34,58 +36,30 @@ export const BLOCK_TYPES = {
 export const BLOCK_TEXTURECOORD = {
     1: createBlockUV({
         "top": [
-            0, 1,
-            1, 1,
-            1, 0,
-            0, 0
+            1, 9,
+            9, 9,
+            9, 1,
+            1, 1
         ],
         "front": [
-            2, 1,
-            3, 1,
-            3, 0,
-            2, 0
+            21, 9,
+            29, 9,
+            29, 1,
+            21, 1
         ],
         "back": [
-            1, 1,
-            2, 1,
-            2, 0,
-            1, 0
+            11, 9,
+            19, 9,
+            19, 1,
+            11, 1
         ]
     }),
     2: createBlockUV({
         "top": [
-            5, 1,
-            6, 1,
-            6, 0,
-            5, 0
-        ]
-    }),
-    3: createBlockUV({
-        "top": [
-            3, 1,
-            4, 1,
-            4, 0,
-            3, 0
-        ],
-        "bottom": [
-            5, 1,
-            6, 1,
-            6, 0,
-            5, 0
-        ],
-        "front": [
-            4, 1,
-            5, 1,
-            5, 0,
-            4, 0
-        ]
-    }),
-    4: createBlockUV({
-        "top": [
-            6, 1,
-            7, 1,
-            7, 0,
-            6, 0
+            51, 9,
+            59, 9,
+            59, 1,
+            51, 1
         ]
     })
 };

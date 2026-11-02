@@ -21,7 +21,7 @@ export class Chunk {
             for (let z = 0; z < CHUNK_SIZE_Z; z++) {
                 const dirtHeight = Math.floor(Math.random() * 4);
                 for (let y = 0; y < dirtHeight; y++) {
-                    this.map[x][y][z] = 3;
+                    this.map[x][y][z] = 2;
                 }
             }
         }
@@ -85,10 +85,10 @@ export class Chunk {
 
                         texCoord.push(...BLOCK_TEXTURECOORD[this.map[x][y][z]]["back"]);
 
-                        col.push(1, 1, 1, 1);
-                        col.push(1, 1, 1, 1);
-                        col.push(1, 1, 1, 1);
-                        col.push(1, 1, 1, 1);
+                        col.push(0.8, 0.8, 0.8, 1);
+                        col.push(0.8, 0.8, 0.8, 1);
+                        col.push(0.8, 0.8, 0.8, 1);
+                        col.push(0.8, 0.8, 0.8, 1);
                     }
 
                     if (this.isAir(x + 1, y, z)) {
@@ -139,10 +139,10 @@ export class Chunk {
 
                         texCoord.push(...BLOCK_TEXTURECOORD[this.map[x][y][z]]["top"]);
 
-                        col.push(1, 1, 1, 1);
-                        col.push(1, 1, 1, 1);
-                        col.push(1, 1, 1, 1);
-                        col.push(1, 1, 1, 1);
+                        col.push(0.9, 0.9, 0.9, 1);
+                        col.push(0.9, 0.9, 0.9, 1);
+                        col.push(0.9, 0.9, 0.9, 1);
+                        col.push(0.9, 0.9, 0.9, 1);
                     }
 
                     if (this.isAir(x, y - 1, z)) {
