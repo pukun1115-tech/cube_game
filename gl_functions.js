@@ -102,32 +102,43 @@ export function create_ibo(gl, data) {
 /**
  * @param {WebGLRenderingContext} gl
  * @param {string} source
- * @param {(texture: WebGLTexture) => void} onLoad
  * @returns {void}
  */
-export function create_texture(gl, source, onLoad) {
-    const img = new Image();
+export function create_texture(gl, source) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
 
-    img.onload = () => {
-        const tex = gl.createTexture();
+        img.onload = () => {
+            const tex = gl.createTexture();
 
-        if (tex === null) {
-            console.error("cannot create texture.");
-            return;
-        }
+            if (tex === null) {
+                reject(new Error("cannot create texture"));
+            }
 
-        gl.bindTexture(gl.TEXTURE_2D, tex);
+            gl.bindTexture(gl.TEXTURE_2D, tex);
 
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+            gl.texImage2D(
+                gl.TEXTURE_2D,
+                0,
+                gl.RGBA,
+                gl.RGBA,
+                gl.UNSIGNED_BYTE,
+                img
+            );
 
-        gl.generateMipmap(gl.TEXTURE_2D);
+            gl.generateMipmap(gl.TEXTURE_2D);
 
-        gl.bindTexture(gl.TEXTURE_2D, null);
+            gl.bindTexture(gl.TEXTURE_2D, null);
 
-        onLoad(tex);
-    };
+            resolve(tex);
+        };
 
-    img.src = source;
+        img.onerror = () => {
+            reject(new Error(`failed to load texture: ${source}`));
+        };
+
+        img.src = source;
+    });
 }
 
 /**

@@ -2,7 +2,6 @@ import { vertex_shader_source, fragment_shader_source, getAttributeLocations, ge
 import { create_shader, create_program, create_vbo, create_ibo, create_texture, set_attribute } from "./gl_functions.js";
 import { Mat4 } from "./matrix.js";
 import { deg2rad, rotateVectorXYZ, rotateVectorZYX } from "./rotation.js";
-import { BLOCK_TEXTURECOORD } from "./config.js";
 import { Chunk } from "./chunk.js";
 
 /** @type {HTMLCanvasElement | null} */
@@ -42,11 +41,14 @@ const attributeStrides = getAttributeStrides();
 const uniformLocations = getUniformLocations(gl, program);
 
 gl.activeTexture(gl.TEXTURE0);
-create_texture(gl, "./texture.png", (loadedTexture) => {
-    gl.bindTexture(gl.TEXTURE_2D, loadedTexture);
+try {
+    const texture = await create_texture(gl, "./texture.png");
+    gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_NEAREST);
-});
+} catch (error) {
+    throw new Error(error);
+}
 
 const mMatrix = Mat4.identity(Mat4.create());
 const vMatrix = Mat4.identity(Mat4.create());
@@ -99,8 +101,7 @@ function mainLoop(gl, indexCount, t) {
     Mat4.identity(pMatrix);
     Mat4.identity(mvpMatrix);
 
-    player.rot.y -= 0.5;
-    const center = rotateVectorZYX({ x: 0, y: 0, z: -1 }, { x: deg2rad(player.rot.x), y: deg2rad(player.rot.y), z: deg2rad(player.rot.z) });
+    const center = rotateVectorZYX({ x: 0, y: 0, z: 1 }, { x: deg2rad(player.rot.x), y: deg2rad(player.rot.y), z: deg2rad(player.rot.z) });
     const up = rotateVectorZYX({ x: 0, y: 1, z: 0 }, { x: deg2rad(player.rot.x), y: deg2rad(player.rot.y), z: deg2rad(player.rot.z) });
 
     Mat4.lookAt(vMatrix, [player.pos.x, player.pos.y + 1.6, player.pos.z], [player.pos.x + center.x, player.pos.y + 1.6 + center.y, player.pos.z + center.z], [up.x, up.y, up.z]);
