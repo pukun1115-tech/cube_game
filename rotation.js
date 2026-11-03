@@ -25,7 +25,7 @@ export function deg2rad(d) {
  *     z:number
  * }}
  */
-export function rotateVectorXYZ(vector, rotation) {
+export function rotate_vector_XYZ(vector, rotation) {
     const { x: rx, y: ry, z: rz } = rotation;
 
     const cosx = Math.cos(rx);

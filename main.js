@@ -1,7 +1,18 @@
-import { vertex_shader_source, fragment_shader_source, getAttributeLocations, getAttributeStrides, getUniformLocations } from "./shader.js";
-import { create_shader, create_program, create_vbo, create_ibo, create_texture, set_attribute } from "./gl_functions.js";
+import {
+    vertex_shader_source,
+    fragment_shader_source,
+    get_attribute_locations,
+    get_attribute_strides,
+    get_uniform_locations
+} from "./shader.js";
+import {
+    create_shader,
+    create_program,
+    create_texture,
+    set_attribute
+} from "./gl_functions.js";
 import { Mat4 } from "./matrix.js";
-import { deg2rad, rotateVectorXYZ } from "./rotation.js";
+import { deg2rad, rotate_vector_XYZ } from "./rotation.js";
 import { Chunk } from "./chunk.js";
 import { PLAYER_MOVE_SPEED } from "./config.js";
 
@@ -34,12 +45,12 @@ if (program === null) {
 gl.useProgram(program);
 
 /** @type {Record<string, number>} */
-const attributeLocations = getAttributeLocations(gl, program);
+const attribute_locations = get_attribute_locations(gl, program);
 /** @type {Record<string, number>} */
-const attributeStrides = getAttributeStrides();
+const attribute_strides = get_attribute_strides();
 
 /** @type {Record<string, number>} */
-const uniformLocations = getUniformLocations(gl, program);
+const uniformLocations = get_uniform_locations(gl, program);
 
 gl.activeTexture(gl.TEXTURE0);
 try {
@@ -57,7 +68,7 @@ const pMatrix = Mat4.identity(Mat4.create());
 const mvpMatrix = Mat4.identity(Mat4.create());
 
 const player = {
-    pos: { x: 0, y: 4, z: 0 },
+    pos: { x: 0, y: 40, z: 0 },
     rot: { x: 0, y: 0, z: 0 },
 };
 
@@ -74,29 +85,38 @@ let chunks = [];
 
 /**
  * @param {WebGLRenderingContext} gl
- * @param {number} indexCount
- * @param {number} time
+ * @param {number} current_time
+ * @param {number} last_time
  * @returns {void}
  */
-function mainLoop(gl, indexCount, time) {
+function main_loop(gl, current_time, last_time) {
+    //delta_time
+    //1フレーム何秒か
+    const delta_time = (current_time - last_time) / 1000;
     //キー操作
     const cosy = Math.cos(deg2rad(player.rot.y));
     const siny = Math.sin(deg2rad(player.rot.y));
     if (keyInputs["KeyW"] === true) {
-        player.pos.x += PLAYER_MOVE_SPEED * siny;
-        player.pos.z += PLAYER_MOVE_SPEED * cosy;
+        player.pos.x += PLAYER_MOVE_SPEED * delta_time * siny;
+        player.pos.z += PLAYER_MOVE_SPEED * delta_time * cosy;
     }
     if (keyInputs["KeyS"] === true) {
-        player.pos.x += -PLAYER_MOVE_SPEED * siny;
-        player.pos.z += -PLAYER_MOVE_SPEED * cosy;
+        player.pos.x += -PLAYER_MOVE_SPEED * delta_time * siny;
+        player.pos.z += -PLAYER_MOVE_SPEED * delta_time * cosy;
     }
     if (keyInputs["KeyA"] === true) {
-        player.pos.x += PLAYER_MOVE_SPEED * cosy;
-        player.pos.z += -PLAYER_MOVE_SPEED * siny;
+        player.pos.x += PLAYER_MOVE_SPEED * delta_time * cosy;
+        player.pos.z += -PLAYER_MOVE_SPEED * delta_time * siny;
     }
     if (keyInputs["KeyD"] === true) {
-        player.pos.x += -PLAYER_MOVE_SPEED * cosy;
-        player.pos.z += PLAYER_MOVE_SPEED * siny;
+        player.pos.x += -PLAYER_MOVE_SPEED * delta_time * cosy;
+        player.pos.z += PLAYER_MOVE_SPEED * delta_time * siny;
+    }
+    if (keyInputs["KeyQ"]) {
+        player.pos.y -= 0.05;
+    }
+    if (keyInputs["KeyE"]) {
+        player.pos.y += 0.05;
     }
     if (keyInputs["ArrowRight"] === true) {
         player.rot.y--;
@@ -122,8 +142,8 @@ function mainLoop(gl, indexCount, time) {
     Mat4.identity(pMatrix);
     Mat4.identity(mvpMatrix);
 
-    const center = rotateVectorXYZ({ x: 0, y: 0, z: 1 }, { x: deg2rad(player.rot.x), y: deg2rad(player.rot.y), z: deg2rad(player.rot.z) });
-    const up = rotateVectorXYZ({ x: 0, y: 1, z: 0 }, { x: deg2rad(player.rot.x), y: deg2rad(player.rot.y), z: deg2rad(player.rot.z) });
+    const center = rotate_vector_XYZ({ x: 0, y: 0, z: 1 }, { x: deg2rad(player.rot.x), y: deg2rad(player.rot.y), z: deg2rad(player.rot.z) });
+    const up = rotate_vector_XYZ({ x: 0, y: 1, z: 0 }, { x: deg2rad(player.rot.x), y: deg2rad(player.rot.y), z: deg2rad(player.rot.z) });
 
     Mat4.lookAt(vMatrix, [player.pos.x, player.pos.y + 1.6, player.pos.z], [player.pos.x + center.x, player.pos.y + 1.6 + center.y, player.pos.z + center.z], [up.x, up.y, up.z]);
     Mat4.perspective(pMatrix, deg2rad(80), gl.canvas.width / gl.canvas.height, 0.01, 1000);
@@ -131,11 +151,19 @@ function mainLoop(gl, indexCount, time) {
     Mat4.multiply(mvpMatrix, pMatrix, vMatrix);
     Mat4.multiply(mvpMatrix, mvpMatrix, mMatrix);
 
-    gl.uniformMatrix4fv(uniformLocations["mvpMatrix"], false, mvpMatrix);
+    gl.uniformMatrix4fv(uniformLocations["mvp_matrix"], false, mvpMatrix);
 
-    gl.drawElements(gl.TRIANGLES, indexCount, gl.UNSIGNED_SHORT, 0);
+    for (const c of chunks) {
+        set_attribute(gl, {
+            "position": c.position_vbo,
+            "color": c.color_vbo,
+            "texture_coord": c.texture_coord_vbo
+        }, attribute_locations, attribute_strides);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, c.ibo);
+        gl.drawElements(gl.TRIANGLES, c.index_count, gl.UNSIGNED_SHORT, 0);
+    }
 
-    requestAnimationFrame(() => mainLoop(gl, indexCount, time + 1));
+    window.requestAnimationFrame((next) => { main_loop(gl, next, current_time); });
 }
 
 /**
@@ -163,51 +191,15 @@ function init(gl) {
     gl.enable(gl.CULL_FACE);
     gl.frontFace(gl.CCW);
 
-    for (let i = 0; i < 2; i++) {
-        for (let j = 0; j < 2; j++) {
-            chunks.push(new Chunk(i, j))
+    for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+            chunks.push(new Chunk(gl, i, j));
         }
     }
 
-    /** @type {Array<number>} */
-    let index = [];
-    /** @type {Array<number>} */
-    let position = [];
-    /** @type {Array<number>} */
-    let color = [];
-    /** @type {Array<number>} */
-    let textureCoord = [];
-    /** @type {number} */
-    let indexOffset = 0;
-
-    for (const c of chunks) {
-        const { pos, idx, texCoord, col, idxOffset } = c.generateMesh(indexOffset);
-        indexOffset = idxOffset;
-        index.push(...idx);
-        position.push(...pos);
-        color.push(...col);
-        textureCoord.push(...texCoord);
-    }
-
-    const ibo = create_ibo(gl, index);
-    const position_vbo = create_vbo(gl, position);
-    const color_vbo = create_vbo(gl, color);
-    const textureCoord_vbo = create_vbo(gl, textureCoord);
-    if (ibo === null) {
-        throw new Error("create_ibo");
-    }
-    if (position_vbo === null || color_vbo === null || textureCoord_vbo === null) {
-        throw new Error("create_vbo");
-    }
-
-    set_attribute(gl, {
-        "position": position_vbo,
-        "color": color_vbo,
-        "textureCoord": textureCoord_vbo,
-    }, attributeLocations, attributeStrides);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
-
-    mainLoop(gl, index.length, 0);
+    window.requestAnimationFrame((next) => {
+        main_loop(gl, next, next);
+    });
 }
 
 init(gl);

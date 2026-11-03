@@ -3,7 +3,7 @@ export const CHUNK_SIZE_Y = 32;
 export const CHUNK_SIZE_Z = 16;
 
 export const GRAVITY = 0.1;
-export const PLAYER_MOVE_SPEED = 0.1;
+export const PLAYER_MOVE_SPEED = 8;
 
 const TEXTURE_SIZE = 128;
 

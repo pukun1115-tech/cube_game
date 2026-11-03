@@ -2,17 +2,17 @@
 export const vertex_shader_source = `
     attribute vec3 position;
     attribute vec4 color;
-    attribute vec2 textureCoord;
+    attribute vec2 texture_coord;
 
-    uniform mat4 mvpMatrix;
+    uniform mat4 mvp_matrix;
 
-    varying vec4 vColor;
-    varying vec2 vTextureCoord;
+    varying vec4 v_color;
+    varying vec2 v_texture_coord;
 
     void main(void) {
-        vColor = color;
-        vTextureCoord = textureCoord;
-        gl_Position = mvpMatrix * vec4(position, 1.0);
+        v_color = color;
+        v_texture_coord = texture_coord;
+        gl_Position = mvp_matrix * vec4(position, 1.0);
     }
 `;
 
@@ -22,11 +22,11 @@ export const fragment_shader_source = `
 
     uniform sampler2D texture;
 
-    varying vec4 vColor;
-    varying vec2 vTextureCoord;
+    varying vec4 v_color;
+    varying vec2 v_texture_coord;
 
     void main(void) {
-        gl_FragColor = vColor * texture2D(texture, vTextureCoord);
+        gl_FragColor = v_color * texture2D(texture, v_texture_coord);
     }
 `;
 
@@ -35,22 +35,22 @@ export const fragment_shader_source = `
  * @param {WebGLProgram} prg
  * @returns {Record<string, number>}
  */
-export function getAttributeLocations(gl, prg) {
+export function get_attribute_locations(gl, prg) {
     return {
         "position": gl.getAttribLocation(prg, "position"),
         "color": gl.getAttribLocation(prg, "color"),
-        "textureCoord": gl.getAttribLocation(prg, "textureCoord"),
+        "texture_coord": gl.getAttribLocation(prg, "texture_coord"),
     };
 }
 
 /**
  * @returns {Record<string, number>}
  */
-export function getAttributeStrides() {
+export function get_attribute_strides() {
     return {
         "position": 3,
         "color": 4,
-        "textureCoord": 2,
+        "texture_coord": 2,
     };
 }
 
@@ -59,9 +59,9 @@ export function getAttributeStrides() {
  * @param {WebGLProgram} prg
  * @returns {Record<string, number>}
  */
-export function getUniformLocations(gl, prg) {
+export function get_uniform_locations(gl, prg) {
     return {
-        "mvpMatrix": gl.getUniformLocation(prg, "mvpMatrix"),
+        "mvp_matrix": gl.getUniformLocation(prg, "mvp_matrix"),
         "texture": gl.getUniformLocation(prg, "texture"),
     }
 }

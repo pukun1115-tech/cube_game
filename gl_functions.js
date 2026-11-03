@@ -82,7 +82,7 @@ export function create_vbo(gl, data) {
 
 /**
  * @param {WebGLRenderingContext} gl
- * @param {Array<number> | Int16Array} data 
+ * @param {Array<number> | Uint16Array} data 
  * @returns {WebGLBuffer | null}
  */
 export function create_ibo(gl, data) {
@@ -93,7 +93,7 @@ export function create_ibo(gl, data) {
     }
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Int16Array(data), gl.STATIC_DRAW);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(data), gl.STATIC_DRAW);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 
     return ibo;
@@ -144,14 +144,14 @@ export function create_texture(gl, source) {
 /**
  * @param {WebGLRenderingContext} gl
  * @param {Record<string, WebGLBuffer>} vbos
- * @param {Record<string, number>} attLocation
- * @param {Record<string, number>} attStride
+ * @param {Record<string, number>} att_location
+ * @param {Record<string, number>} att_stride
  * @returns {void}
  */
-export function set_attribute(gl, vbos, attLocation, attStride) {
-    for (const key of Object.keys(attLocation)) {
+export function set_attribute(gl, vbos, att_location, att_stride) {
+    for (const key of Object.keys(att_location)) {
         gl.bindBuffer(gl.ARRAY_BUFFER, vbos[key]);
-        gl.enableVertexAttribArray(attLocation[key]);
-        gl.vertexAttribPointer(attLocation[key], attStride[key], gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(att_location[key]);
+        gl.vertexAttribPointer(att_location[key], att_stride[key], gl.FLOAT, false, 0, 0);
     }
 }
