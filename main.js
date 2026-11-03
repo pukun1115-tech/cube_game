@@ -1,8 +1,9 @@
 import { vertex_shader_source, fragment_shader_source, getAttributeLocations, getAttributeStrides, getUniformLocations } from "./shader.js";
 import { create_shader, create_program, create_vbo, create_ibo, create_texture, set_attribute } from "./gl_functions.js";
 import { Mat4 } from "./matrix.js";
-import { deg2rad, rotateVectorXYZ, rotateVectorZYX } from "./rotation.js";
+import { deg2rad, rotateVectorXYZ } from "./rotation.js";
 import { Chunk } from "./chunk.js";
+import { PLAYER_MOVE_SPEED } from "./config.js";
 
 /** @type {HTMLCanvasElement | null} */
 const canvas = document.getElementById("canvas");
@@ -47,7 +48,7 @@ try {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_NEAREST);
 } catch (error) {
-    throw new Error(error);
+    throw new Error("create_texture", { cause: error });
 }
 
 const mMatrix = Mat4.identity(Mat4.create());
@@ -73,21 +74,41 @@ let chunks = [];
 
 /**
  * @param {WebGLRenderingContext} gl
+ * @param {number} indexCount
+ * @param {number} time
  * @returns {void}
  */
-function mainLoop(gl, indexCount, t) {
+function mainLoop(gl, indexCount, time) {
     //キー操作
+    const cosy = Math.cos(deg2rad(player.rot.y));
+    const siny = Math.sin(deg2rad(player.rot.y));
     if (keyInputs["KeyW"] === true) {
-        player.pos.z--;
+        player.pos.x += PLAYER_MOVE_SPEED * siny;
+        player.pos.z += PLAYER_MOVE_SPEED * cosy;
     }
     if (keyInputs["KeyS"] === true) {
-        player.pos.z++;
+        player.pos.x += -PLAYER_MOVE_SPEED * siny;
+        player.pos.z += -PLAYER_MOVE_SPEED * cosy;
     }
     if (keyInputs["KeyA"] === true) {
-        player.pos.x--;
+        player.pos.x += PLAYER_MOVE_SPEED * cosy;
+        player.pos.z += -PLAYER_MOVE_SPEED * siny;
     }
     if (keyInputs["KeyD"] === true) {
-        player.pos.x++;
+        player.pos.x += -PLAYER_MOVE_SPEED * cosy;
+        player.pos.z += PLAYER_MOVE_SPEED * siny;
+    }
+    if (keyInputs["ArrowRight"] === true) {
+        player.rot.y--;
+    }
+    if (keyInputs["ArrowLeft"] === true) {
+        player.rot.y++;
+    }
+    if (keyInputs["ArrowUp"] === true) {
+        player.rot.x--;
+    }
+    if (keyInputs["ArrowDown"] === true) {
+        player.rot.x++;
     }
     //gldraw
     gl.clearDepth(1.0);
@@ -101,8 +122,8 @@ function mainLoop(gl, indexCount, t) {
     Mat4.identity(pMatrix);
     Mat4.identity(mvpMatrix);
 
-    const center = rotateVectorZYX({ x: 0, y: 0, z: 1 }, { x: deg2rad(player.rot.x), y: deg2rad(player.rot.y), z: deg2rad(player.rot.z) });
-    const up = rotateVectorZYX({ x: 0, y: 1, z: 0 }, { x: deg2rad(player.rot.x), y: deg2rad(player.rot.y), z: deg2rad(player.rot.z) });
+    const center = rotateVectorXYZ({ x: 0, y: 0, z: 1 }, { x: deg2rad(player.rot.x), y: deg2rad(player.rot.y), z: deg2rad(player.rot.z) });
+    const up = rotateVectorXYZ({ x: 0, y: 1, z: 0 }, { x: deg2rad(player.rot.x), y: deg2rad(player.rot.y), z: deg2rad(player.rot.z) });
 
     Mat4.lookAt(vMatrix, [player.pos.x, player.pos.y + 1.6, player.pos.z], [player.pos.x + center.x, player.pos.y + 1.6 + center.y, player.pos.z + center.z], [up.x, up.y, up.z]);
     Mat4.perspective(pMatrix, deg2rad(80), gl.canvas.width / gl.canvas.height, 0.01, 1000);
@@ -114,7 +135,7 @@ function mainLoop(gl, indexCount, t) {
 
     gl.drawElements(gl.TRIANGLES, indexCount, gl.UNSIGNED_SHORT, 0);
 
-    requestAnimationFrame(() => mainLoop(gl, indexCount, t + 1));
+    requestAnimationFrame(() => mainLoop(gl, indexCount, time + 1));
 }
 
 /**

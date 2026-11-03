@@ -3,6 +3,7 @@ export const CHUNK_SIZE_Y = 32;
 export const CHUNK_SIZE_Z = 16;
 
 export const GRAVITY = 0.1;
+export const PLAYER_MOVE_SPEED = 0.1;
 
 const TEXTURE_SIZE = 128;
 
@@ -77,8 +78,8 @@ export const BLOCK_TEXTURECOORD = {
         ],
         "front": [
             41, 9,
-            51, 9,
-            51, 1,
+            49, 9,
+            49, 1,
             41, 1
         ]
     })
