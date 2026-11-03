@@ -19,10 +19,11 @@ export class Chunk {
 
         for (let x = 0; x < CHUNK_SIZE_X; x++) {
             for (let z = 0; z < CHUNK_SIZE_Z; z++) {
-                const dirtHeight = Math.floor(Math.random() * 4);
+                const dirtHeight = Math.floor(Math.random() * 4) + 2;
                 for (let y = 0; y < dirtHeight; y++) {
                     this.map[x][y][z] = 2;
                 }
+                this.map[x][dirtHeight - 1][z] = 3;
             }
         }
     }
