@@ -1,5 +1,8 @@
-import { CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z, BLOCK_TEXTURECOORD } from "./config.js";
 import { create_ibo, create_vbo } from "./gl_functions.js";
+import { CHUNK_SIZE_X, CHUNK_SIZE_Y, CHUNK_SIZE_Z, BLOCK_TEXTURECOORD } from "./config.js";
+import { PerlinNoise } from "./perlin_noise.js";
+
+const pn = new PerlinNoise();
 
 export class Chunk {
     constructor(gl, x, z) {
@@ -12,11 +15,11 @@ export class Chunk {
         this.position_vbo = null;
         this.color_vbo = null;
         this.texture_coord_vbo = null;
-        this.generateMap();
+        this.generate_map();
         this.generate_mesh(gl);
     }
 
-    generateMap() {
+    generate_map() {
         this.map = new Array(CHUNK_SIZE_X);
         for (let x = 0; x < CHUNK_SIZE_X; x++) {
             this.map[x] = new Array(CHUNK_SIZE_Y);
@@ -27,13 +30,32 @@ export class Chunk {
 
         for (let x = 0; x < CHUNK_SIZE_X; x++) {
             for (let z = 0; z < CHUNK_SIZE_Z; z++) {
-                const dirtHeight = Math.floor(Math.random() * 2) + 2;
+                const dirtHeight = this.calculate_dirt_height(this.x + x, this.z + z);
                 for (let y = 0; y < dirtHeight; y++) {
                     this.map[x][y][z] = 2;
                 }
                 this.map[x][dirtHeight - 1][z] = 3;
             }
         }
+    }
+
+    /**
+     * @param {number} x
+     * @param {number} z
+     * @returns {number}
+     */
+    calculate_dirt_height(x, z) {
+        let height = 0;
+        //noise_scaleが大きければがたがた
+        //小さければゆるやか
+        let noise_scale = 0.02;
+        let add_scale = 24;
+        for (let i = 0; i < 3; i++) {
+            height += ((pn.noise(x * noise_scale, z * noise_scale, 0) + 1) / 2) * add_scale;
+            noise_scale *= 0.5;
+            add_scale *= 0.25;
+        }
+        return Math.max(1, Math.min(CHUNK_SIZE_Y - 1, Math.floor(height)));
     }
 
     /**

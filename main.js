@@ -191,8 +191,8 @@ function init(gl) {
     gl.enable(gl.CULL_FACE);
     gl.frontFace(gl.CCW);
 
-    for (let i = 0; i < 10; i++) {
-        for (let j = 0; j < 10; j++) {
+    for (let i = -2; i < 2; i++) {
+        for (let j = -2; j < 2; j++) {
             chunks.push(new Chunk(gl, i, j));
         }
     }
